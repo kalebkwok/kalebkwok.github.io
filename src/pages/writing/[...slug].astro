@@ -1,0 +1,130 @@
+---
+import 'katex/dist/katex.min.css';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+import { getPosts, postUrl, formatDate, readingMinutes, tagSlug, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    // posts are newest first, so the "newer" post is i - 1
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+interface Props { post: Post; newer?: Post; older?: Post }
+const { post, newer, older } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h: { depth: number }) => h.depth === 2 || h.depth === 3);
+const minutes = readingMinutes(post.body);
+---
+<Base title={post.data.title} description={post.data.description} type="article">
+  <article class="post-layout">
+    <header class="post-head">
+      {post.data.series && <p class="series">Series · {post.data.series}</p>}
+      <h1>{post.data.title}</h1>
+      <p class="lede">{post.data.description}</p>
+      <div class="post-meta">
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, 'long')}</time>
+        <span>·</span>
+        <span>{minutes} min read</span>
+        {post.data.updated && <span>· updated {formatDate(post.data.updated)}</span>}
+        {post.data.kind === 'note' && <span class="badge" style="margin-left:0">note</span>}
+        {post.data.draft && <span class="badge draft" style="margin-left:0">draft</span>}
+      </div>
+      {post.data.tags.length > 0 && (
+        <ul class="tags" style="margin-top: 14px">
+          {post.data.tags.map((t: string) => <li><a class="tag" href={`/tags/${tagSlug(t)}/`}>{t}</a></li>)}
+        </ul>
+      )}
+    </header>
+
+    {toc.length > 2 && (
+      <>
+        <details class="toc-inline">
+          <summary>Contents</summary>
+          <nav class="toc" aria-label="Contents">
+            <ol>{toc.map((h: { depth: number; slug: string; text: string }) => <li class={`depth-${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+          </nav>
+        </details>
+        <aside class="toc-side">
+          <nav class="toc" aria-label="Contents">
+            <div class="toc-title">Contents</div>
+            <ol>{toc.map((h: { depth: number; slug: string; text: string }) => <li class={`depth-${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+          </nav>
+        </aside>
+      </>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <footer class="post-foot">
+      <p>Questions or corrections? <a href={`mailto:${site.email}?subject=${encodeURIComponent('Re: ' + post.data.title)}`}>Email me</a>.</p>
+      {(newer || older) && (
+        <nav class="post-nav" aria-label="More posts">
+          {older && <a class="prev" href={postUrl(older)}><small>← Older</small>{older.data.title}</a>}
+          {newer && <a class="next" href={postUrl(newer)}><small>Newer →</small>{newer.data.title}</a>}
+        </nav>
+      )}
+    </footer>
+  </article>
+
+  <script is:inline>
+    (function () {
+      // Heading anchors
+      document.querySelectorAll('.prose h2[id], .prose h3[id]').forEach(function (h) {
+        var a = document.createElement('a');
+        a.className = 'heading-anchor';
+        a.href = '#' + h.id;
+        a.setAttribute('aria-label', 'Link to this section');
+        a.textContent = '#';
+        h.appendChild(a);
+      });
+
+      // Code blocks: language label + copy button
+      document.querySelectorAll('.prose pre.astro-code').forEach(function (pre) {
+        var wrap = document.createElement('div');
+        wrap.className = 'code-wrap';
+        pre.parentNode.insertBefore(wrap, pre);
+        wrap.appendChild(pre);
+        var lang = pre.getAttribute('data-language');
+        if (lang && lang !== 'plaintext') {
+          var label = document.createElement('span');
+          label.className = 'code-lang';
+          label.textContent = lang;
+          wrap.appendChild(label);
+        }
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.type = 'button';
+        btn.textContent = 'copy';
+        btn.setAttribute('aria-label', 'Copy code');
+        btn.addEventListener('click', function () {
+          var text = pre.innerText;
+          var done = function () { btn.textContent = 'ok'; setTimeout(function () { btn.textContent = 'copy'; }, 1200); };
+          if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+        });
+        wrap.appendChild(btn);
+      });
+
+      // Highlight the current section in the side contents
+      var links = document.querySelectorAll('.toc-side a');
+      if (!links.length || !('IntersectionObserver' in window)) return;
+      var byId = {};
+      links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting && byId[e.target.id]) {
+            links.forEach(function (a) { a.classList.remove('active'); });
+            byId[e.target.id].classList.add('active');
+          }
+        });
+      }, { rootMargin: '0px 0px -70% 0px' });
+      document.querySelectorAll('.prose h2[id], .prose h3[id]').forEach(function (h) { obs.observe(h); });
+    })();
+  </script>
+</Base>

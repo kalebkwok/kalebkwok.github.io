@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts, tagSlug, type Post } from '../../lib/posts';
+
+const posts = await getPosts();
+const byYear = new Map<number, Post[]>();
+for (const p of posts) {
+  const y = p.data.date.getUTCFullYear();
+  byYear.set(y, [...(byYear.get(y) ?? []), p]);
+}
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+---
+<Base title="Writing" description="Posts and notes on LLM serving, inference engines, and distributed systems.">
+  <header class="page-head">
+    <h1>Writing</h1>
+    <p>Long posts on how serving systems work, and shorter notes on things I ran into.</p>
+  </header>
+
+  {tags.length > 0 && (
+    <ul class="tags" style="margin-top: 20px">
+      {tags.map((t) => <li><a class="tag" href={`/tags/${tagSlug(t)}/`}>{t}</a></li>)}
+    </ul>
+  )}
+
+  {posts.length === 0 && <p class="empty" style="margin-top: 32px">No posts yet. They're on the way.</p>}
+
+  {[...byYear.entries()].map(([year, list]) => (
+    <section>
+      <h2 class="year">{year}</h2>
+      <PostList posts={list} />
+    </section>
+  ))}
+</Base>

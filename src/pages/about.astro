@@ -1,0 +1,107 @@
+---
+import fs from 'node:fs';
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+// Drop a square photo at public/profile.jpg and it shows up here.
+const hasPhoto = fs.existsSync(new URL('../../public/profile.jpg', import.meta.url));
+
+const experience = [
+  {
+    when: 'May – Aug 2026',
+    org: 'LinkedIn',
+    role: 'System and Infrastructure Engineer Intern, Compute Broker · Sunnyvale, CA',
+    points: [
+      'Added in-place host quarantine to Compute Broker across all three allocation loops, eliminating about 200 pool migrations a year.',
+      'Shipped in-place SKU correction through Compute Broker and Kubernetes APIs, fixing 100+ mismatches without host rebuilds.',
+      'Recovered 131 stranded hosts from a failed capacity give-back and reclaimed about 16 servers of idle capacity.',
+      'Made the repair workflow idempotent and resumable, and ramped it default-off from dev to corp to prod after 10 safety checks.',
+    ],
+  },
+  {
+    when: 'May 2024 – May 2025',
+    org: 'Arista Networks',
+    role: 'Software Engineer II · Santa Clara, CA',
+    points: [
+      'Sped up bulk configuration updates 340x, from 30+ minutes to seconds, with request batching, diff compaction, and API refactoring.',
+      'Scaled device-management capacity from about 200 to 5,000+ devices with Redis-backed template rendering and compute reuse.',
+      "Owned CloudVision Studio's provisioning feature, co-owned its Go/Python automation engine, and mentored two new engineers.",
+    ],
+  },
+  {
+    when: 'Dec 2022 – May 2024',
+    org: 'Arista Networks',
+    role: 'Software Engineer I · Santa Clara, CA',
+    points: [
+      'Cut MTTR by 30% with platform-wide observability: structured logging, Kafka-backed metrics, distributed tracing, and SLOs.',
+      'Cut critical rollout failures by 30% with schema-migration guards and retry handling for partial failures.',
+    ],
+  },
+];
+
+const education = [
+  { when: 'Jan – Dec 2026', org: 'University of Illinois Urbana-Champaign', role: 'Master of Computer Science' },
+  { when: 'Sep 2018 – Mar 2022', org: 'University of California, Santa Barbara', role: 'B.S. in Computer Science' },
+];
+
+const skills = [
+  ['LLM serving', 'SGLang, vLLM, FlashInfer, FlashAttention, radix/prefix caching, chunked prefill, continuous batching, overlap scheduling, tensor and sequence parallelism'],
+  ['GPU', 'ROCm/HIP'],
+  ['ML / RL', 'PyTorch, Hugging Face, verl, GRPO, ChromaDB'],
+  ['Languages', 'Python, C++, Go, Java, TypeScript, SQL, Bash'],
+  ['Infra', 'Kubernetes, Docker, gRPC, Kafka, Redis, PostgreSQL, Prometheus, Grafana, OpenTelemetry, AWS'],
+];
+---
+<Base title="About" description="About Kaleb Guo: background, experience, and how to reach me.">
+  <div class="about-top">
+    <header class="page-head">
+      <h1>About</h1>
+      <p style="color: var(--text)">
+        I'm Kaleb. I came to LLM serving from distributed systems: two and a half years on network
+        automation backends at Arista, then a summer on LinkedIn's compute capacity platform. Now I'm
+        working on the system layer of inference engines, which means scheduling, KV-cache management,
+        and parallelism. I'm finishing a Master of Computer Science at UIUC this December.
+      </p>
+      <p style="margin-top: 12px">
+        Best way to reach me is <a href={`mailto:${site.email}`}>{site.email}</a>. I'm also on{' '}
+        <a href={site.links.github}>GitHub</a> and <a href={site.links.linkedin}>LinkedIn</a>.
+      </p>
+    </header>
+    {hasPhoto && <img src="/profile.jpg" alt="Kaleb Guo" width="132" height="132" />}
+  </div>
+
+  <section class="section">
+    <div class="section-head"><h2>Experience</h2></div>
+    <ul class="timeline">
+      {experience.map((e) => (
+        <li>
+          <span class="when">{e.when}</span>
+          <div>
+            <h3>{e.org}</h3>
+            <p class="role">{e.role}</p>
+            <ul>{e.points.map((pt) => <li>{pt}</li>)}</ul>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Education</h2></div>
+    <ul class="timeline">
+      {education.map((e) => (
+        <li>
+          <span class="when">{e.when}</span>
+          <div><h3>{e.org}</h3><p class="role">{e.role}</p></div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Skills</h2></div>
+    <dl class="skills">
+      {skills.map(([k, v]) => (<><dt>{k}</dt><dd>{v}</dd></>))}
+    </dl>
+  </section>
+</Base>

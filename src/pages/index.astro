@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+import { projects } from '../data/projects';
+import { getPosts } from '../lib/posts';
+
+const posts = (await getPosts()).slice(0, 6);
+---
+<Base>
+  <section class="intro">
+    <h1>Kaleb Guo</h1>
+    <p class="tagline">I work on <mark>LLM serving systems</mark>: schedulers, KV caches, and the parallelism underneath.</p>
+    <p>
+      MCS student at UIUC, graduating December 2026. Before that I spent about two and a half years
+      building distributed backends at Arista Networks and interned on LinkedIn's compute capacity platform.
+      This is where I write up what I learn.
+    </p>
+    <ul class="links">
+      <li><a href={site.links.github}><Icon name="github" />GitHub</a></li>
+      <li><a href={site.links.linkedin}><Icon name="linkedin" />LinkedIn</a></li>
+      <li><a href={`mailto:${site.email}`}><Icon name="mail" />Email</a></li>
+      <li><a href="/rss.xml"><Icon name="rss" />RSS</a></li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Writing</h2>
+      {posts.length > 0 && <a href="/writing/">All posts →</a>}
+    </div>
+    {posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">No posts yet. They're on the way.</p>}
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Projects</h2>
+      <a href="/projects/">Details →</a>
+    </div>
+    <ul class="project-rows">
+      {projects.map((p) => (
+        <li>
+          <a class="name" href={`/projects/#${p.slug}`}>{p.title}</a>
+          <span class="when">{p.dates}</span>
+          <p>{p.summary}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>

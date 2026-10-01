@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectFigure from '../components/ProjectFigure.astro';
+import { projects } from '../data/projects';
+---
+<Base title="Projects" description="LLM serving and systems projects by Kaleb Guo.">
+  <header class="page-head">
+    <h1>Projects</h1>
+    <p>Inference engines, parallelism, and RL infrastructure.</p>
+  </header>
+
+  <div class="cards">
+    {projects.map((p) => (
+      <article class="card" id={p.slug}>
+        <figure><ProjectFigure slug={p.slug} /></figure>
+        <div class="body">
+          <h2>{p.title}</h2>
+          <p class="when">{p.dates}</p>
+          <p>{p.summary}</p>
+          <ul class="details">{p.details.map((d) => <li>{d}</li>)}</ul>
+          <ul class="tags">{p.tags.map((t) => <li><span class="tag">{t}</span></li>)}</ul>
+          {p.links && p.links.length > 0 && (
+            <p style="margin: 14px 0 0">{p.links.map((l, i) => <>{i > 0 && ' · '}<a href={l.href}>{l.label}</a></>)}</p>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+</Base>
