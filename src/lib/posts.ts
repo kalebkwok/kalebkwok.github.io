@@ -20,10 +20,12 @@ export function formatDate(d: Date, style: 'short' | 'long' = 'short') {
 }
 
 export function readingMinutes(body = '') {
-  const words = body.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 230));
+  const text = body.replace(/```[\s\S]*?```/g, ' ');
+  const cjk = (text.match(/[\u4e00-\u9fff]/g) ?? []).length;
+  const words = text.replace(/[\u4e00-\u9fff]/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 230 + cjk / 400));
 }
 
 export function tagSlug(tag: string) {
-  return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return tag.toLowerCase().trim().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/(^-|-$)/g, '');
 }

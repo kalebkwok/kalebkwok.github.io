@@ -20,7 +20,7 @@ const { Content, headings } = await render(post);
 const toc = headings.filter((h: { depth: number }) => h.depth === 2 || h.depth === 3);
 const minutes = readingMinutes(post.body);
 ---
-<Base title={post.data.title} description={post.data.description} type="article">
+<Base title={post.data.title} description={post.data.description} type="article" lang={post.data.lang}>
   <div class="progress" aria-hidden="true"></div>
   <article class="post-layout">
     <header class="post-head">

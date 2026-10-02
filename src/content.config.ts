@@ -13,6 +13,7 @@ const posts = defineCollection({
     // essay: a full post. note: a short write-up of one thing you learned.
     kind: z.enum(['essay', 'note']).default('essay'),
     series: z.string().optional(),
+    lang: z.enum(['en', 'zh']).default('en'),
     // Drafts show up in `npm run dev` but are left out of the built site.
     draft: z.boolean().default(false),
   }),
