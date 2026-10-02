@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PostList from '../components/PostList.astro';
 import Icon from '../components/Icon.astro';
-import { site } from '../data/site';
+import { site, features } from '../data/site';
 import { projects } from '../data/projects';
 import { getPosts } from '../lib/posts';
 
@@ -33,7 +33,7 @@ const posts = (await getPosts()).slice(0, 6);
     {posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">No posts yet. They're on the way.</p>}
   </section>
 
-  <section class="section">
+  {features.projects && <section class="section">
     <div class="section-head">
       <h2>Projects</h2>
       <a href="/projects/">Details →</a>
@@ -47,5 +47,5 @@ const posts = (await getPosts()).slice(0, 6);
         </li>
       ))}
     </ul>
-  </section>
+  </section>}
 </Base>

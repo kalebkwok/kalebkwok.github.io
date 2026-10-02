@@ -11,8 +11,12 @@ export const site = {
   },
 };
 
+// Projects are hidden for now. To bring them back: set this to true and
+// rename src/pages/_projects.astro to src/pages/projects.astro.
+export const features = { projects: false };
+
 export const nav = [
   { href: '/writing/', label: 'Writing' },
-  { href: '/projects/', label: 'Projects' },
+  ...(features.projects ? [{ href: '/projects/', label: 'Projects' }] : []),
   { href: '/about/', label: 'About' },
 ];

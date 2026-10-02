@@ -30,7 +30,7 @@ npm run build    # what GitHub Pages will serve, drafts excluded
 
 ## Other edits
 
-- Projects: `src/data/projects.ts`
+- Projects: `src/data/projects.ts`. Hidden for now; to show them, set `features.projects` to `true` in `src/data/site.ts` and rename `src/pages/_projects.astro` to `projects.astro`
 - Name, tagline, links: `src/data/site.ts`
 - About page and experience: `src/pages/about.astro`
 - Profile photo: add a square `public/profile.jpg` and it appears on the About page
