@@ -6,7 +6,7 @@ export const site = {
   tagline: 'I work on LLM serving systems: schedulers, KV caches, and the parallelism underneath.',
   email: 'kalebguo@gmail.com',
   links: {
-    github: 'https://github.com/kalebkwok',
+    github: 'https://github.com/kalebguo',
     linkedin: 'https://www.linkedin.com/in/kaleb-kwok/',
   },
 };

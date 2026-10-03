@@ -1,4 +1,4 @@
-# kalebkwok.github.io
+# kalebguo.github.io
 
 Personal site and technical blog, built with [Astro](https://astro.build) and deployed to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`.
 
